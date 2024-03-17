@@ -22,6 +22,17 @@ pipeline {
             }
         }
 
+stage('SonarQube Analysis') {
+            steps {
+                script {
+                    def scannerHome = tool 'SonarQube'
+                    withSonarQubeEnv('sq2') {
+                        sh "${scannerHome}/bin/sonar-scanner"
+                    }
+                }
+            }
+        }
+
         stage('Logout from ECR') {
             steps {
                 sh 'docker logout 217511887881.dkr.ecr.us-east-1.amazonaws.com'
@@ -29,4 +40,3 @@ pipeline {
         }
     }
 }
-
