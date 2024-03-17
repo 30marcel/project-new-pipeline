@@ -21,13 +21,14 @@ pipeline {
                 sh 'docker push 217511887881.dkr.ecr.us-east-1.amazonaws.com/my-ecr-repo:1.0.2'
             }
         }
-stage('SonarQube Analysis') {
-            environment {
-                SONAR_SCANNER_HOME = tool 'SonarQubeScanner'
-            }
+
+        stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('SonarQube') {
-                    sh "${SONAR_SCANNER_HOME}/bin/sonar:sonar"
+                script {
+                    def scannerHome = tool 'SonarScanner'
+                    withSonarQubeEnv('sonar-server') {
+                        sh "${scannerHome}/bin/sonar-scanner"
+                    }
                 }
             }
         }
@@ -39,3 +40,4 @@ stage('SonarQube Analysis') {
         }
     }
 }
+
