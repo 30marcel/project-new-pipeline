@@ -27,7 +27,7 @@ stage('SonarQube Analysis') {
             }
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    sh "${SONAR_SCANNER_HOME}/bin/sonar-scanner"
+                    sh "${SONAR_SCANNER_HOME}/bin/sonar:sonar"
                 }
             }
         }
