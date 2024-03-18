@@ -25,9 +25,14 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 script {
-                    def scannerHome = tool 'SonarScanner'
-                    withSonarQubeEnv('sonar-server') {
-                        sh "${scannerHome}/bin/sonar-scanner"
+                    // Define SonarQube Scanner tool
+                    def scannerHome = tool 'SonarQubeScanner';
+
+                    // Run SonarQube analysis
+                    withSonarQubeEnv('SonarQube') {
+                        sh "${scannerHome}/bin/sonar-scanner \
+                            -Dsonar.projectKey=marcel30-sonar \
+                            -Dsonar.sources=."
                     }
                 }
             }
