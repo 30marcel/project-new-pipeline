@@ -1,28 +1,38 @@
 pipeline {
     agent any
-    environment{
-      DOCKERHUB_CREDENTIALS = credentials('Dockerhub')
+
+    tools {
+        // Specify the SonarQube Scanner tool
+        sonarScanner 'SonarScanner'
     }
+
     stages {
-        stage('Build') {
+        stage('SCM') {
             steps {
-                sh 'docker build -t melong123/web-app:1.0.3 .'
+                checkout scm
             }
         }
-        stage('Login') {
+        stage('SonarQube Analysis') {
             steps {
-                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                script {
+                    // Define the SonarQube Scanner home
+                    def scannerHome = tool 'SonarScanner'
+                    
+                    // Run the SonarQube Scanner
+                    withSonarQubeEnv('SonarQube') {
+                        sh "${scannerHome}/bin/sonar-scanner"
+                    }
+                }
             }
         }
-        stage('Push') {
-            steps {
-                sh 'docker push melong123/web-app:1.0.3'
-            }
+    }
+
+    post {
+        success {
+            echo 'SonarQube analysis completed successfully.'
         }
-        stage('Logout') {
-            steps {
-                sh 'docker logout'
-            }
+        failure {
+            echo 'SonarQube analysis failed.'
         }
     }
 }
